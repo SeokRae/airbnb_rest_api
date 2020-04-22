@@ -23,6 +23,10 @@ REST & GraphQL API of the Airbnb Clone using Django REST Framework and Graphene 
    - 35 line: cls.fakers[code].seed(random.randint(1, 10000)) > cls.fakers[code].seed_instance(random.randint(1, 10000))
 7. python manage.py mega_seed
 
+## Django Rest Framework
+
+- pipenv install djangorestframework
+
 ### API Actions
 
 - [ ] List Rooms
