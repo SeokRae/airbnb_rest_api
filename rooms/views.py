@@ -13,7 +13,7 @@ class ListRoomsView(ListAPIView):
 
 
 # See Room
-class SeeRoomView(RetrieveAPIView):
+class DetailRoomView(RetrieveAPIView):
 
     queryset = Room.objects.all()
     serializer_class = BigRoomSerializer
