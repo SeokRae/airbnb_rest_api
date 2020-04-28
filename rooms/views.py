@@ -13,16 +13,17 @@ from .serializers import ReadRoomSerializer, WriteRoomSerializer
 def rooms_view(request):
     # GET: /rooms 의 경우 데이터 호출만을 담당함
     if request.method == "GET":
-        rooms = Room.objects.all()
+        rooms = Room.objects.all()[:5]
         serializer = ReadRoomSerializer(rooms, many=True).data
         return Response(serializer)
 
     elif request.method == "POST":
-        # POST할 수 없는 사용자 권한 체크
+
+        # POST할 수 없는 사용자 권한 체크 > 401
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
         serializer = WriteRoomSerializer(data=request.data)
+
         # serializer의 데이터가 유효할경우 Create
         if serializer.is_valid():
             room = serializer.save(user=request.user)
