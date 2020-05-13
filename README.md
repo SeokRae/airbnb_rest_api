@@ -9,7 +9,7 @@ REST & GraphQL API of the Airbnb Clone using Django REST Framework and Graphene 
 3. git log
 4. rm -rf .git
 5. git init
-6. git remote add origin https://github.com/SeokRae/airbnb_rest_api.git
+6. git remote add origin {My Resitory}
 
 ## My Project Install Settings
 
