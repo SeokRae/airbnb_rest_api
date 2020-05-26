@@ -31,6 +31,7 @@ class RoomsView(APIView):
 
 
 class RoomView(APIView):
+    # default get_room
     def get_room(self, pk):
         try:
             room = Room.objects.get(pk=pk)
@@ -38,6 +39,7 @@ class RoomView(APIView):
         except Room.DoesNotExist:
             return None
 
+    # 요청 값에 따른 get
     def get(self, request, pk):
         room = self.get_room(pk)
         if room is not None:
@@ -46,23 +48,32 @@ class RoomView(APIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+    # room 작성하기
     def put(self, request, pk):
         room = self.get_room(pk)
         if room is not None:
             if room.user != request.user:
                 return Response(status=status.HTTP_403_FORBIDDEN)
+
+            # instance: room 값을 첫번째 파라미터로 넣으면 이를 update로 인식하여 동작
+            # partial = True 값의 뜻은 모든 데이터를 보내지 않고, 내가 바꾸고 싶은 데이터만 전송할 수 있게 하겠다는 뜻
             serializer = WriteRoomSerializer(room, data=request.data, partial=True)
+            # room 작성 입력값 체크
             if serializer.is_valid():
-                serializer.save()
+                room = serializer.save()
+                # update된 room 데이터를 조회
+                return Response(ReadRoomSerializer(room).data)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response()
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+    # room 삭제
     def delete(self, request, pk):
         room = self.get_room(pk)
         if room is not None:
+            # 권한 체크
             if room.user != request.user:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             room.delete()

@@ -32,12 +32,32 @@ class WriteRoomSerializer(serializers.Serializer):
         return Room.objects.create(**validated_data)
 
     def validate(self, data):
-        if not self.instance:
+        # instance가 존재하는 경우(Create) check_in, check_out 데이터의 validate check
+        if self.instance:
+            check_in = data.get("check_in", self.instance.check_in)
+            check_out = data.get("check_out", self.instance.check_out)
+        else:
             check_in = data.get("check_in")
             check_out = data.get("check_out")
-            if check_in == check_out:
-                raise serializers.ValidationError("Not enough time between changes")
+        if check_in == check_out:
+            raise serializers.ValidationError("Not enough time between changes")
         return data
 
+    # put(update) url 호출 시
     def update(self, instance, validated_data):
-        print(instance, validated_data)
+        # update 시 room의 field validate check
+        instance.name = validated_data.get("name", instance.name)
+        instance.address = validated_data.get("address", instance.address)
+        instance.price = validated_data.get("price", instance.price)
+        instance.beds = validated_data.get("beds", instance.beds)
+        instance.lat = validated_data.get("lat", instance.lat)
+        instance.lng = validated_data.get("lng", instance.lng)
+        instance.bedrooms = validated_data.get("bedrooms", instance.bedrooms)
+        instance.bathrooms = validated_data.get("bathrooms", instance.bathrooms)
+        instance.check_in = validated_data.get("check_in", instance.check_in)
+        instance.check_out = validated_data.get("check_out", instance.check_out)
+        instance.instant_book = validated_data.get(
+            "instant_book", instance.instant_book
+        )
+        instance.save()
+        return instance
