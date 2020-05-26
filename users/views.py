@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import User
+from rooms.models import Room
 from .serializers import ReadUserSerializer
 from rooms.serializers import RoomSerializer
 
@@ -40,5 +41,21 @@ class FavsView(APIView):
         serializer = RoomSerializer(user.favs.all(), many=True).data
         return Response(serializer)
 
+    # Favs update
     def put(self, request):
-        pass
+        # room pk 체크
+        pk = request.data.get("pk", None)
+        user = request.user
+        if pk is not None:
+            try:
+                # room이 존재하는 지 확인
+                room = Room.objects.get(pk=pk)
+                # room의 정보가 user의 fav에 있다면 삭제, 없으면 추가
+                if room in user.favs.all():
+                    user.favs.remove(room)
+                else:
+                    user.favs.add(room)
+                return Response()
+            except Room.DoesNotExist:
+                pass
+        return Response(status=status.HTTP_400_BAD_REQUEST)
